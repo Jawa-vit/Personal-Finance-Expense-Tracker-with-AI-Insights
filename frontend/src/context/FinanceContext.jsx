@@ -17,9 +17,9 @@ export const FinanceProvider = ({ children }) => {
     setLoading(true);
     try {
       const [txnRes, sumRes, budRes] = await Promise.all([
-        axios.get(`/api/transactions?month=${m}&year=${y}`),
-        axios.get(`/api/transactions/summary?month=${m}&year=${y}`),
-        axios.get(`/api/budgets?month=${m}&year=${y}`),
+        api.get(`/api/transactions?month=${m}&year=${y}`),
+        api.get(`/api/transactions/summary?month=${m}&year=${y}`),
+        api.get(`/api/budgets?month=${m}&year=${y}`),
       ]);
       setTransactions(txnRes.data.transactions);
       setSummary(sumRes.data.summary);
