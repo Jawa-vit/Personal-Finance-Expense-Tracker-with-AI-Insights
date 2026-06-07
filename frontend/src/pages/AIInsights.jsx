@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useFinance } from '../context/FinanceContext';
 
 const TYPE_STYLES = {
@@ -20,7 +20,7 @@ export default function AIInsights() {
   const getInsights = async () => {
     setLoadingInsights(true);
     try {
-      const { data } = await axios.post('/api/ai/insights', { month, year });
+      const { data } = await api.post('/api/ai/insights', { month, year });
       setInsights(data.insights);
     } catch {
       setInsights([{ icon: '⚠️', title: 'Error', insight: 'Failed to load insights. Check your API key.', type: 'warning' }]);
@@ -36,7 +36,7 @@ export default function AIInsights() {
     setChatHistory((h) => [...h, { role: 'user', text: q }]);
     setChatLoading(true);
     try {
-      const { data } = await axios.post('/api/ai/chat', {
+      const { data } = await api.post('/api/ai/chat', {
         question: q,
         context: { income: summary.income, expense: summary.expense, savings: summary.savings, byCategory: summary.byCategory },
       });

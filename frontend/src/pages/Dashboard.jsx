@@ -8,7 +8,7 @@ import { useFinance } from '../context/FinanceContext';
 import TransactionItem from '../components/TransactionItem';
 import AddTransactionModal from '../components/AddTransactionModal';
 import { fmt, MONTH_NAMES, CAT_COLORS, CAT_ICONS } from '../utils/constants';
-import axios from 'axios';
+import api from '../api';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend, Filler);
 
@@ -21,7 +21,7 @@ export default function Dashboard() {
 
   const loadTrend = async () => {
     try {
-      const { data } = await axios.get('/api/transactions/trend?months=6');
+      const { data } = await api.get('/api/transactions/trend?months=6');
       setTrend(data.trend);
     } catch {}
   };
