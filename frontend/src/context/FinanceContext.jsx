@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react';
-import axios from 'axios';
+import api from '../api';
 import toast from 'react-hot-toast';
 
 const FinanceContext = createContext(null);
@@ -32,20 +32,20 @@ export const FinanceProvider = ({ children }) => {
   }, [month, year]);
 
   const addTransaction = async (data) => {
-    const { data: res } = await axios.post('/api/transactions', data);
+    const { data: res } = await api.post('/api/transactions', data);
     toast.success('Transaction added!');
     await fetchAll();
     return res.transaction;
   };
 
   const deleteTransaction = async (id) => {
-    await axios.delete(`/api/transactions/${id}`);
+    await api.delete(`/api/transactions/${id}`);
     toast.success('Transaction deleted');
     await fetchAll();
   };
 
   const saveBudget = async (categories) => {
-    const { data: res } = await axios.post('/api/budgets', { month, year, categories });
+    const { data: res } = await api.post('/api/budgets', { month, year, categories });
     setBudget(res.budget);
     toast.success('Budget saved!');
   };
