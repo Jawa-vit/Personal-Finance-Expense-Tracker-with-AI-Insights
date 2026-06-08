@@ -1,7 +1,9 @@
 const express = require('express');
 const { protect } = require('../middleware/auth');
 const Transaction = require('../models/Transaction');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const router = express.Router();
 router.use(protect);
 
@@ -32,19 +34,17 @@ Return exactly 4 financial insights as a JSON array (no markdown, no backticks):
 [{"icon":"emoji","title":"Short title","insight":"2 specific actionable sentences","type":"tip|warning|good|info"}]`;
 
     // Call Anthropic API
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }],
-      }),
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
     });
+    
+    const result = await model.generateContent(prompt);
+    
+    const text = result.response.text();
+    
+    const insights = JSON.parse(text);
+    
+    res.json({ insights });
 
     const data = await response.json();
     const text = data.content.map((c) => c.text || '').join('');
@@ -61,24 +61,19 @@ router.post('/chat', async (req, res) => {
   try {
     const { question, context } = req.body;
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 400,
-        messages: [
-          {
-            role: 'user',
-            content: `You are a helpful personal finance advisor. User's finances: ${JSON.stringify(context)}. Answer concisely in 2-3 sentences: ${question}`,
-          },
-        ],
-      }),
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
     });
+    
+    const result = await model.generateContent(
+      `You are a helpful personal finance advisor. User's finances: ${JSON.stringify(
+        context
+      )}. Answer concisely in 2-3 sentences: ${question}`
+    );
+      
+    const answer = result.response.text();
+      
+    res.json({ answer });
 
     const data = await response.json();
     const answer = data.content.map((c) => c.text || '').join('');
