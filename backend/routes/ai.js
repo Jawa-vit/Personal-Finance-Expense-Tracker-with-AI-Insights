@@ -2,7 +2,7 @@ const express = require('express');
 const { protect } = require('../middleware/auth');
 const Transaction = require('../models/Transaction');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-
+console.log("GEMINI KEY EXISTS:", !!process.env.GEMINI_API_KEY);
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const router = express.Router();
 router.use(protect);
