@@ -46,10 +46,6 @@ Return exactly 4 financial insights as a JSON array (no markdown, no backticks):
     
     res.json({ insights });
 
-    const data = await response.json();
-    const text = data.content.map((c) => c.text || '').join('');
-    const insights = JSON.parse(text);
-    res.json({ insights });
   } catch (err) {
     console.error('AI insights error:', err.message);
     res.status(500).json({ error: 'Failed to generate AI insights.' });
@@ -64,7 +60,7 @@ router.post('/chat', async (req, res) => {
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
     });
-    
+
     const result = await model.generateContent(
       `You are a helpful personal finance advisor. User's finances: ${JSON.stringify(
         context
@@ -75,9 +71,6 @@ router.post('/chat', async (req, res) => {
       
     res.json({ answer });
 
-    const data = await response.json();
-    const answer = data.content.map((c) => c.text || '').join('');
-    res.json({ answer });
   } catch (err) {
     res.status(500).json({ error: 'Failed to get AI response.' });
   }
